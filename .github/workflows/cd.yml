@@ -29,7 +29,7 @@ jobs:
         uses: burnett01/rsync-deployments@5.2.1
         with:
           switches: -avzr --delete --exclude="" --include="" --filter=""
-          path: ./dist
+          path: ./dist/
           remote_path: /www/test-cd-docker
           remote_host: ${{ secrets.TENCENT_SERVER_HOST }}
           remote_port: 22
