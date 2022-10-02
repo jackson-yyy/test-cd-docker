@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: "16.x"
       - name: 安装依赖
-        run: 'll ./dist && npm install'
+        run: 'ls ./dist && npm install'
       - name: 前端项目打包
         run: npm run build
       - name: 创建远程目录
