@@ -1,8 +1,7 @@
 name: release
 
 on:
-  push:
-    branches: ["main"] # master 分支提交时触发
+  workflow_dispatch
 
 jobs:
   build:
