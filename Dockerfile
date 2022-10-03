@@ -1,8 +1,8 @@
 FROM nginx
 
-WORKDIR /dist
+WORKDIR /
 
-COPY ./dist /webui
+COPY dist /webui
 
 COPY ./nginx.conf /etc/nginx/config.d
 
