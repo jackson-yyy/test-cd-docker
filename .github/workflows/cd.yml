@@ -15,5 +15,38 @@ jobs:
         with:
           node-version: "16.x"
       
-      - name: 查看上下文
-        run: ls
+      - name: 获取分支号
+        id: vars
+        run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
+
+      - name: 安装依赖
+        run: 'npm install'
+
+      - name: 前端项目打包
+        run: npm run build
+
+      - name: 构建镜像
+        run: | 
+          echo "准备构建镜像：test-cd-docker:v${{ steps.vars.outputs.short_ref }}"
+          docker build --file Dockerfile -t test-cd-docker:v${{ steps.vars.outputs.short_ref }}
+          docker save -o test-cd-docker_v${{ steps.vars.outputs.short_ref }}.tar test-cd-docker:v${{ steps.vars.outputs.short_ref }}
+
+      - name: 创建远程目录
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.TENCENT_SERVER_HOST }}
+          username: root
+          key: ${{ secrets.TENCENT_SERVER_PRIVATE_KEY }}
+          port: 22
+          script: 'cd /www/ && ./mkdir.sh test-cd-docker'
+
+      - name: 上传镜像
+        uses: burnett01/rsync-deployments@5.2.1
+        with:
+          switches: -avzr --delete --exclude="" --include="" --filter=""
+          path: ./test-cd-docker_v${{ steps.vars.outputs.short_ref }}.tar
+          remote_path: /www/test-cd-docker
+          remote_host: ${{ secrets.TENCENT_SERVER_HOST }}
+          remote_port: 22
+          remote_user: root
+          remote_key: ${{ secrets.TENCENT_SERVER_PRIVATE_KEY }}
