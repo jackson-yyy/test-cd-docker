@@ -29,7 +29,8 @@ jobs:
         run: | 
           echo "准备构建镜像：test-cd-docker:${{ steps.vars.outputs.short_ref }}"
           docker build -f Dockerfile -t test-cd-docker:${{ steps.vars.outputs.short_ref }} .
-          docker save -o test-cd-docker_v${{ steps.vars.outputs.short_ref }}.tar test-cd-docker:${{ steps.vars.outputs.short_ref }}
+          docker save -o test-cd-docker_${{ steps.vars.outputs.short_ref }}.tar test-cd-docker:${{ steps.vars.outputs.short_ref }}
+          docker image ls
 
       - name: 创建远程目录
         uses: appleboy/ssh-action@master
@@ -44,7 +45,7 @@ jobs:
         uses: burnett01/rsync-deployments@5.2.1
         with:
           switches: -avzr --delete --exclude="" --include="" --filter=""
-          path: ./test-cd-docker_v${{ steps.vars.outputs.short_ref }}.tar
+          path: ./test-cd-docker_${{ steps.vars.outputs.short_ref }}.tar
           remote_path: /www/test-cd-docker
           remote_host: ${{ secrets.TENCENT_SERVER_HOST }}
           remote_port: 22
