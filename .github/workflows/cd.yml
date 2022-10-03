@@ -27,9 +27,9 @@ jobs:
 
       - name: 构建镜像
         run: | 
-          echo "准备构建镜像：test-cd-docker:v${{ steps.vars.outputs.short_ref }}"
-          docker build --file Dockerfile -t test-cd-docker:v${{ steps.vars.outputs.short_ref }}
-          docker save -o test-cd-docker_v${{ steps.vars.outputs.short_ref }}.tar test-cd-docker:v${{ steps.vars.outputs.short_ref }}
+          echo "准备构建镜像：test-cd-docker:${{ steps.vars.outputs.short_ref }}"
+          docker build -f Dockerfile -t test-cd-docker:${{ steps.vars.outputs.short_ref }} .
+          docker save -o test-cd-docker_v${{ steps.vars.outputs.short_ref }}.tar test-cd-docker:${{ steps.vars.outputs.short_ref }}
 
       - name: 创建远程目录
         uses: appleboy/ssh-action@master
