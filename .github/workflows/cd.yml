@@ -29,7 +29,7 @@ jobs:
         run: | 
           echo "准备构建镜像：test-cd-docker:${{ steps.vars.outputs.short_ref }}"
           docker build -f Dockerfile -t test-cd-docker:${{ steps.vars.outputs.short_ref }} .
-          docker export -o test-cd-docker_${{ steps.vars.outputs.short_ref }}.tar test-cd-docker:${{ steps.vars.outputs.short_ref }}
+          docker save -o test-cd-docker_${{ steps.vars.outputs.short_ref }}.tar test-cd-docker:${{ steps.vars.outputs.short_ref }}
           docker image ls
 
       - name: 创建远程目录
