@@ -29,7 +29,7 @@ jobs:
         run: | 
           echo "准备构建镜像：test-cd-docker:${{ steps.vars.outputs.short_ref }}"
           docker build -f Dockerfile -t test-cd-docker:${{ steps.vars.outputs.short_ref }} .
-          docker save -o test-cd-docker_${{ steps.vars.outputs.short_ref }}.tar test-cd-docker:${{ steps.vars.outputs.short_ref }}
+          docker export -o test-cd-docker_${{ steps.vars.outputs.short_ref }}.tar test-cd-docker:${{ steps.vars.outputs.short_ref }}
           docker image ls
 
       - name: 创建远程目录
@@ -39,7 +39,7 @@ jobs:
           username: root
           key: ${{ secrets.TENCENT_SERVER_PRIVATE_KEY }}
           port: 22
-          script: 'cd /www/ && ./mkdir.sh test-cd-docker'
+          script: 'cd /www/ && ./mkdir.sh test-cd-docker && rm -rf /www/test-cd-docker/test-cd-docker_${{ steps.vars.outputs.short_ref }}.tar'
 
       - name: 上传镜像
         uses: burnett01/rsync-deployments@5.2.1
