@@ -31,4 +31,4 @@ jobs:
           sudo docker login --username=${{ secrets.ALI_DOCKERHUB_ACCOUNT }} --password=${{ secrets.ALI_DOCKERHUB_PASSWORD }} registry.cn-guangzhou.aliyuncs.com
           docker version
           docker build -f Dockerfile -t registry.cn-guangzhou.aliyuncs.com/yb_registry/test-cd-docker:${{ steps.vars.outputs.short_ref }} .
-          docker push registry.cn-guangzhou.aliyuncs.com/yb_registry/test-cd-docker:${{ steps.vars.outputs.short_ref }}
+          sudo docker push registry.cn-guangzhou.aliyuncs.com/yb_registry/test-cd-docker:${{ steps.vars.outputs.short_ref }}
