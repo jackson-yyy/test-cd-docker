@@ -14,10 +14,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: "16.x"
-      
-      - name: 获取分支号
-        id: vars
-        run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
 
       - name: 安装依赖
         run: 'npm install'
@@ -25,23 +21,7 @@ jobs:
       - name: 前端项目打包
         run: npm run build
 
-      - name: 构建镜像
-        run: | 
-          echo "准备构建镜像：test-cd-docker:${{ steps.vars.outputs.short_ref }}"
-          docker build -f Dockerfile -t test-cd-docker:${{ steps.vars.outputs.short_ref }} .
-          docker save -o test-cd-docker_${{ steps.vars.outputs.short_ref }}.tar test-cd-docker:${{ steps.vars.outputs.short_ref }}
-          docker image ls
-
-      - name: 创建远程目录
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.TENCENT_SERVER_HOST }}
-          username: root
-          key: ${{ secrets.TENCENT_SERVER_PRIVATE_KEY }}
-          port: 22
-          script: 'cd /www/ && ./mkdir.sh test-cd-docker && rm -rf /www/test-cd-docker/test-cd-docker_${{ steps.vars.outputs.short_ref }}.tar'
-
-      - name: 上传镜像
+      
         uses: burnett01/rsync-deployments@5.2.1
         with:
           switches: -avzr --delete --exclude="" --include="" --filter=""
@@ -51,3 +31,17 @@ jobs:
           remote_port: 22
           remote_user: root
           remote_key: ${{ secrets.TENCENT_SERVER_PRIVATE_KEY }}
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 获取分支号
+        id: 'vars'
+        run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
+
+      - name: 构建&上传镜像
+        run: | 
+          echo "准备构建镜像：test-cd-docker:${{ steps.vars.outputs.short_ref }}"
+          sudo docker login --username=${{ secrets.ALI_DOCKERHUB_ACCOUNT }} --password=${{ secrets.ALI_DOCKERHUB_PASSWORD }} registry.cn-guangzhou.aliyuncs.com
+          docker version
+          docker build -f Dockerfile -t registry.cn-guangzhou.aliyuncs.com/yb_registry/test-cd-docker:${{ steps.vars.outputs.short_ref }} .
+          docker push registry.cn-guangzhou.aliyuncs.com/yb_registry/test-cd-docker:${{ steps.vars.outputs.short_ref }}
