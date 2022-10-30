@@ -21,16 +21,6 @@ jobs:
       - name: 前端项目打包
         run: npm run build
 
-      
-        uses: burnett01/rsync-deployments@5.2.1
-        with:
-          switches: -avzr --delete --exclude="" --include="" --filter=""
-          path: ./test-cd-docker_${{ steps.vars.outputs.short_ref }}.tar
-          remote_path: /www/test-cd-docker
-          remote_host: ${{ secrets.TENCENT_SERVER_HOST }}
-          remote_port: 22
-          remote_user: root
-          remote_key: ${{ secrets.TENCENT_SERVER_PRIVATE_KEY }}
   deploy:
     runs-on: ubuntu-latest
     steps:
